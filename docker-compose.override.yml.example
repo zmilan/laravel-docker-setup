@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  {{PROJECT_NAME}}_nginx:
+    ports:
+      - "80:80"
+  {{PROJECT_NAME}}_backend:
+    ports:
+      - "8899:80"
+      - "5173:5173" # required for Vite dev server for live update
+  {{PROJECT_NAME}}_mysql:
+    ports:
+      - "3307:3306"
+  {{PROJECT_NAME}}_mailpit:
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+  {{PROJECT_NAME}}_redis:
+    ports:
+      - "6379:6379"
