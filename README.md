@@ -1,4 +1,8 @@
-# Steps
+# Main use case
+This repository is created with one use case in mind: to have easy option to start developing Laravel application locally.
+It is not something that you should use in production!
+
+## Steps
 
 - Copy all files from this project to root of your new project directory.
 - In root directory, copy `.env.example` file to `.env`.
