@@ -6,18 +6,41 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
 RUN apt-get update -y
-RUN apt-get install -y git zip unzip zlib1g-dev libpng-dev libjpeg-dev libfreetype6-dev
+RUN apt-get install -y \
+    git \
+    zip \
+    unzip \
+    zlib1g-dev \
+    libgd-dev \
+    libicu-dev \
+    libsodium-dev \
+    ca-certificates curl gnupg \
+    libfreetype-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev
+# configure intl extension
+RUN docker-php-ext-configure intl
+# configure and install gd extension
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    	&& docker-php-ext-install -j$(nproc) gd
+
 RUN pecl install xdebug-3.2.2 redis \
     && docker-php-ext-enable xdebug && docker-php-ext-enable redis
-RUN docker-php-ext-install pdo_mysql mysqli gd && docker-php-ext-configure gd --with-freetype --with-jpeg
+
+RUN docker-php-ext-install pdo_mysql mysqli bcmath exif intl sodium
+
+# install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer creates=/usr/local/bin/composer
+# configure xdebug
 COPY xdebug.ini /etc/php/8.2/mods-available/xdebug.ini
+# enable apache mode rewrite
 RUN a2enmod rewrite
 
-RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - \
-    && apt-get install -y nodejs
+# install node
+RUN mkdir -p /etc/apt/keyrings && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+RUN apt-get update && apt-get install nodejs -y
 
-ARG UID=$UID
+ARG UID=$USER_ID
 ARG GID=$GROUP_ID
 
 RUN groupadd -g "${GID}" laravel \

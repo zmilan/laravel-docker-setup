@@ -1,6 +1,5 @@
 # Main use case
-This repository is created with one use case in mind: to have easy option to start developing Laravel application locally.
-It is not something that you should use in production!
+This repository is created with one use case in mind: to have easy option to start developing Laravel+LiveWire application locally.
 
 ## Steps
 

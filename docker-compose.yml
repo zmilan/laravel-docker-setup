@@ -19,8 +19,8 @@ services:
       context: ./.docker/backend
       dockerfile: Dockerfile
       args:
-        USER_ID: ${USER_ID:-0}
-        GROUP_ID: ${GROUP_ID:-0}
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
     container_name: {{PROJECT_NAME}}_backend
     restart: unless-stopped
     volumes:
@@ -36,7 +36,7 @@ services:
       - {{PROJECT_NAME}}_mysql
 
   {{PROJECT_NAME}}_mysql:
-    image: mysql:5.7
+    image: mysql:8.1
     container_name: {{PROJECT_NAME}}_mysql
     restart: unless-stopped
     tty: true
@@ -63,7 +63,7 @@ services:
     networks:
       - {{PROJECT_NAME}}_network
 
-  {{PROJECT_NAME}}redis:
+  {{PROJECT_NAME}}_redis:
     image: redis:7.2.0
     container_name: {{PROJECT_NAME}}_redis
     restart: unless-stopped
