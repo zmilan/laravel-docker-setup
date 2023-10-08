@@ -19,8 +19,8 @@ services:
       context: ./.docker/backend
       dockerfile: Dockerfile
       args:
-        USER_ID: ${USER_ID:-1000}
-        GROUP_ID: ${GROUP_ID:-1000}
+        UID: ${USER_ID:-1000}
+        GID: ${GROUP_ID:-1000}
     container_name: {{PROJECT_NAME}}_backend
     restart: unless-stopped
     volumes:

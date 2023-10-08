@@ -40,8 +40,8 @@ RUN a2enmod rewrite
 RUN mkdir -p /etc/apt/keyrings && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
 RUN apt-get update && apt-get install nodejs -y
 
-ARG UID=$USER_ID
-ARG GID=$GROUP_ID
+ARG UID=$UID
+ARG GID=$GID
 
 RUN groupadd -g "${GID}" laravel \
   && useradd --create-home --no-log-init -u "${UID}" -g "${GID}" laravel
