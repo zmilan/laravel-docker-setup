@@ -19,14 +19,14 @@ services:
       context: ./.docker/backend
       dockerfile: Dockerfile
       args:
-        UID: ${USER_ID:-1000}
-        GID: ${GROUP_ID:-1000}
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
     container_name: {{PROJECT_NAME}}_backend
     restart: unless-stopped
     volumes:
-      - ./src:/var/www/html/{{PROJECT_NAME}}/
+      - ./src:/var/www/{{PROJECT_NAME}}/
       - ./.docker/backend/apache-default.conf:/etc/apache2/sites-available/000-default.conf
-    working_dir: /var/www/html/{{PROJECT_NAME}}/
+    working_dir: /var/www/{{PROJECT_NAME}}/
     networks:
       - {{PROJECT_NAME}}_network
     depends_on:

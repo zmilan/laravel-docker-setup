@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-ENV APACHE_DOCUMENT_ROOT /var/www/html/{{PROJECT_NAME}}/public
+ENV APACHE_DOCUMENT_ROOT /var/www/{{PROJECT_NAME}}/public
 
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
@@ -40,10 +40,11 @@ RUN a2enmod rewrite
 RUN mkdir -p /etc/apt/keyrings && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
 RUN apt-get update && apt-get install nodejs -y
 
-ARG UID=$UID
-ARG GID=$GID
+# args from .env file
+ARG USER_ID
+ARG GROUP_ID
 
-RUN groupadd -g "${GID}" laravel \
-  && useradd --create-home --no-log-init -u "${UID}" -g "${GID}" laravel
+RUN groupadd -g "${GROUP_ID}" laravel \
+  && useradd --create-home --no-log-init -u "${USER_ID}" -g "${GROUP_ID}" laravel
 
 USER laravel
