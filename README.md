@@ -1,5 +1,7 @@
 # Main use case
-This repository is created with one use case in mind: to have easy option to start developing Laravel + LiveWire application locally.
+This repository is created with one use case in mind: to have easy option to start developing Laravel + Livewire/Filament application locally. 
+Most services are placed inside `docker-compose.override.yml.example` as optional, in case you wish to run only Laravel. 
+Since Laravel is set to SQLite by default, MySQL service is commented out by default, but you can activate it if needed.
 
 ## Steps
 
@@ -9,12 +11,13 @@ This repository is created with one use case in mind: to have easy option to sta
 and additionally adjust ports inside `docker-compose.override.yml` to your need.
 - Search whole project for `{{PROJECT_NAME}}`, and replace it with your project name. Use underscore for connecting multiple words.
 - Search whole project for `{{PROJECT_URL}}`, and replace it with your desired local URL. You can use same like for `{{PROJECT_NAME}}`,
-just replace underscore with dash. Additionally, final local URL will have added `-dev.com`. For example if you use `test-project` for
-`{{PROJECT_URL}}`, final local URL would be `http://test-project-dev.com`.
+just replace underscore with dash. Additionally, final local URL will have added `.local`. For example for
+`{{PROJECT_URL}}`, final local URL would be `http://{{PROJECT_URL}}.local`.
 - Add final local URL to your `hosts` file (on Linux it is in `/etc/hosts`)
 - You can now build and run containers with `docker-compose up --build`
 - Once when containers are built and running you can access `backend` container and install laravel:
-  + Run `docker exec -it {{PROJECT_NAME}}_backend bash` (replace `{{PROJECT_NAME}}` with your project name)
+  + Run `docker exec -it {{PROJECT_NAME}}_backend bash`
+  + When you are inside your container, delete `.gitignore` file with command `rm -rf .gitignore`. It was there only to keep an empty folder in the git.
   + When you are inside your container, run `composer create-project laravel/laravel . `
 - Once when you have installed Laravel you need to configure Vite to be able to use its dev server for hot reload
   + Run `docker exec -it {{PROJECT_NAME}}_backend bash` (replace `{{PROJECT_NAME}}` with your project name)
@@ -23,10 +26,11 @@ just replace underscore with dash. Additionally, final local URL will have added
     ```javascript
     export default defineConfig({
         server: {
-            host: true,
-            hmr: {
-                host: '172.31.0.5', // You network address of container in docker, you can see it in output when you run `npm run dev`
-            }
+            host: '0.0.0.0',
+            strictPort: true,
+            // Defines the origin of the generated asset URLs during development,
+            // this will also be used for the public/hot file (Vite devserver URL)
+            origin: 'http://{{PROJECT_URL}}.local:5173'
         },
         // ... here goes original part of config, laravel plagin...
     });

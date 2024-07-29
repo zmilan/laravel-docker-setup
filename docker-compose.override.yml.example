@@ -2,19 +2,76 @@ version: '3.8'
 
 services:
   {{PROJECT_NAME}}_nginx:
+    image: nginx:1.21-alpine
+    container_name: {{PROJECT_NAME}}_nginx
+    restart: unless-stopped
+    volumes:
+      - ./.docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - {{PROJECT_NAME}}_backend
+    networks:
+      - {{PROJECT_NAME}}_network
+    links:
+      - {{PROJECT_NAME}}_backend
     ports:
       - "80:80"
+
+  {{PROJECT_NAME}}_mailpit:
+    image: axllent/mailpit:v1.8
+    container_name: {{PROJECT_NAME}}_mailpit
+    restart: unless-stopped
+    networks:
+      - {{PROJECT_NAME}}_network
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+  {{PROJECT_NAME}}_redis:
+    image: redis:7.2.0
+    container_name: {{PROJECT_NAME}}_redis
+    restart: unless-stopped
+    networks:
+      - {{PROJECT_NAME}}_network
+    ports:
+      - "6379:6379"
+
   {{PROJECT_NAME}}_backend:
     ports:
       - "8899:80"
       - "5173:5173" # required for Vite dev server for live update
-  {{PROJECT_NAME}}_mysql:
-    ports:
-      - "3307:3306"
-  {{PROJECT_NAME}}_mailpit:
-    ports:
-      - "1025:1025"
-      - "8025:8025"
-  {{PROJECT_NAME}}_redis:
-    ports:
-      - "6379:6379"
+#   Uncomment "depends_on" and "links" in case that you use mysql service
+#    depends_on:
+#        {{PROJECT_NAME}}_mysql:
+#          condition: service_healthy
+#    links:
+#      - {{PROJECT_NAME}}_mysql
+
+#  {{PROJECT_NAME}}_mysql:
+#    image: mysql:8.1
+#    container_name: {{PROJECT_NAME}}_mysql
+#    restart: unless-stopped
+#    tty: true
+#    environment:
+#      - "MYSQL_DATABASE={{PROJECT_NAME}}"
+#      - "MYSQL_USER={{PROJECT_NAME}}_user"
+#      - "MYSQL_PASSWORD={{PROJECT_NAME}}_user_pwd"
+#      - "MYSQL_ROOT_PASSWORD={{PROJECT_NAME}}_root_pwd"
+#      - "MYSQL_ROOT_HOST=%"
+#    healthcheck:
+#      test: mysqladmin ping -h 127.0.0.1 -u {{PROJECT_NAME}}_user --password={{PROJECT_NAME}}_user_pwd
+#      interval: 5s
+#      retries: 10
+#    networks:
+#      - {{PROJECT_NAME}}_network
+#    volumes:
+#      - ./.docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+#      - ./.mysqldata:/var/lib/mysql
+#    ports:
+#      - "3307:3306"
+
+# Uncomment "volumes" in case that you use MySQL service
+#volumes:
+#  mysqldata:
+
+networks:
+    {{PROJECT_NAME}}_network:

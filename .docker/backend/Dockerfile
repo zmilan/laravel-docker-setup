@@ -1,4 +1,4 @@
-FROM php:8.2-apache
+FROM php:8.3-apache
 
 ENV APACHE_DOCUMENT_ROOT /var/www/{{PROJECT_NAME}}/public
 
@@ -11,6 +11,7 @@ RUN apt-get install -y \
     zip \
     unzip \
     zlib1g-dev \
+    libzip-dev \
     libgd-dev \
     libicu-dev \
     libsodium-dev \
@@ -21,24 +22,24 @@ RUN apt-get install -y \
 # configure intl extension
 RUN docker-php-ext-configure intl
 # configure and install gd extension
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+RUN docker-php-ext-configure gd --with-jpeg \
     	&& docker-php-ext-install -j$(nproc) gd
 
-RUN pecl install xdebug-3.2.2 redis \
+RUN pecl install xdebug redis \
     && docker-php-ext-enable xdebug && docker-php-ext-enable redis
 
-RUN docker-php-ext-install pdo_mysql mysqli bcmath exif intl sodium
+RUN docker-php-ext-install pdo_mysql mysqli bcmath exif intl sodium mysqli pdo_mysql zip
 
 # install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer creates=/usr/local/bin/composer
 # configure xdebug
-COPY xdebug.ini /etc/php/8.2/mods-available/xdebug.ini
+COPY xdebug.ini /etc/php/8.3/mods-available/xdebug.ini
 # enable apache mode rewrite
 RUN a2enmod rewrite
 
 # install node
 RUN mkdir -p /etc/apt/keyrings && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
-RUN apt-get update && apt-get install nodejs -y
+RUN apt-get update && apt-get install nodejs npm -y
 
 # args from .env file
 ARG USER_ID
