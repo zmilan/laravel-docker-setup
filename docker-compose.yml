@@ -11,10 +11,30 @@ services:
     container_name: {{PROJECT_NAME}}_backend
     restart: unless-stopped
     volumes:
-      - ./src:/var/www/{{PROJECT_NAME}}/
+      - ./src/backend:/var/www/{{PROJECT_NAME}}/
       - ./.docker/backend/apache-default.conf:/etc/apache2/sites-available/000-default.conf
     working_dir: /var/www/{{PROJECT_NAME}}/
     networks:
       - {{PROJECT_NAME}}_network
+
+  {{PROJECT_NAME}}_frontend:
+    build:
+      context: ./.docker/frontend
+      dockerfile: Dockerfile
+      args:
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    container_name: {{PROJECT_NAME}}_frontend
+    restart: unless-stopped
+    volumes:
+      - ./src/frontend:/usr/src/{{PROJECT_NAME}}
+    working_dir: /usr/src/{{PROJECT_NAME}}/
+    command: /bin/sh -c "yarn install && quasar dev -p 8383"
+    networks:
+      - {{PROJECT_NAME}}_network
+    depends_on:
+      - {{PROJECT_NAME}}_backend
+    links:
+      - {{PROJECT_NAME}}_backend
 
 # docker-compose down -v --rmi all --remove-orphans

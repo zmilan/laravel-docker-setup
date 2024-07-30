@@ -15,33 +15,23 @@ just replace underscore with dash. Additionally, final local URL will have added
 `{{PROJECT_URL}}`, final local URL would be `http://{{PROJECT_URL}}.local`.
 - Add final local URL to your `hosts` file (on Linux it is in `/etc/hosts`)
 - You can now build and run containers with `docker-compose up --build`
-- Once when containers are built and running you can access `backend` container and install laravel:
+- Once when containers are built and running you can access `backend` container and install Laravel:
   + Run `docker exec -it {{PROJECT_NAME}}_backend bash`
   + When you are inside your container, delete `.gitignore` file with command `rm -rf .gitignore`. It was there only to keep an empty folder in the git.
   + When you are inside your container, run `composer create-project laravel/laravel . `
-- Once when you have installed Laravel you need to configure Vite to be able to use its dev server for hot reload
-  + Run `docker exec -it {{PROJECT_NAME}}_backend bash` (replace `{{PROJECT_NAME}}` with your project name)
-  + When you are inside your container, run `npm install`
-  + From your editor open `src/vite.config.js` and add this part into `defineConfig(...)`:
-    ```javascript
-    export default defineConfig({
-        server: {
-            host: '0.0.0.0',
-            strictPort: true,
-            // Defines the origin of the generated asset URLs during development,
-            // this will also be used for the public/hot file (Vite devserver URL)
-            origin: 'http://{{PROJECT_URL}}.local:5173'
-        },
-        // ... here goes original part of config, laravel plagin...
-    });
-    ```
-  + After that you are able to run `npm run dev` to start Vite dev server that will listen to frontend part changes and reload
-  + To be able to use testing emails you need to set your Laravel `.env` file to have:
-    - `MAIL_HOST="{{PROJECT_NAME}}_mailpit"`
-    - `MAIL_PORT=1025`
-  + To be able to use redis you need to set your Laravel `.env` file to have:
-    - `REDIS_HOST="{{PROJECT_NAME}}_redis"`
+- Once when containers are built and running you can access `frontend` container and install Quasar:
+  + Run `docker exec -it {{PROJECT_NAME}}_frontend bash`
+  + When you are inside your container, delete `.gitignore` file with command `rm -rf .gitignore`. It was there only to keep an empty folder in the git.
+  + When you are inside your container, run `npm init quasar` and follow Quasar initialization procedure. For directory name choose `.`.
+- To be able to use testing emails you need to set your Laravel `.env` file to have:
+  + `MAIL_HOST="{{PROJECT_NAME}}_mailpit"`
+  + `MAIL_PORT=1025`
+- To be able to use redis you need to set your Laravel `.env` file to have:
+  + `REDIS_HOST="{{PROJECT_NAME}}_redis"`
 - If you need to execute some command inside php container that usually require sudo, you need to access container with `docker exec -it --user root {{PROJECT_NAME}}_backend bash`
+- Each time when you `up` you need to start Quasar in the `frontend` container:
+  + Run `docker exec -it {{PROJECT_NAME}}_frontend bash`
+  + When inside of docker container run `quasar dev -p 8383`. You can adjust port in case that it is changed.
 
 **At this moment you should have working setup. Enjoy!**
 
