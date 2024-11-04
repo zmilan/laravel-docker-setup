@@ -18,7 +18,7 @@ just replace underscore with dash. Additionally, final local URL will have added
 - Once when containers are built and running you can access `backend` container and install laravel:
   + Run `docker exec -it {{PROJECT_NAME}}_backend bash`
   + When you are inside your container, delete `.gitignore` file with command `rm -rf .gitignore`. It was there only to keep an empty folder in the git.
-  + When you are inside your container, run `composer create-project laravel/laravel . `
+  + When you are inside your container, run `composer create-project laravel/laravel . ` or `composer create-project statamic/statamic .`
 - Once when you have installed Laravel you need to configure Vite to be able to use its dev server for hot reload
   + Run `docker exec -it {{PROJECT_NAME}}_backend bash` (replace `{{PROJECT_NAME}}` with your project name)
   + When you are inside your container, run `npm install`
